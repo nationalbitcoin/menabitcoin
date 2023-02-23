@@ -1,0 +1,92 @@
+#!/sbin/openrc-run
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/menabitcoin/.menabitcoin" ]; then
+	MENABITCOIND_DEFAULT_DATADIR="/var/lib/menabitcoin/.menabitcoin"
+else
+	MENABITCOIND_DEFAULT_DATADIR="/var/lib/menabitcoind"
+fi
+
+MENABITCOIND_CONFIGFILE=${MENABITCOIND_CONFIGFILE:-/etc/menabitcoin/menabitcoin.conf}
+MENABITCOIND_PIDDIR=${MENABITCOIND_PIDDIR:-/var/run/menabitcoind}
+MENABITCOIND_PIDFILE=${MENABITCOIND_PIDFILE:-${MENABITCOIND_PIDDIR}/menabitcoind.pid}
+MENABITCOIND_DATADIR=${MENABITCOIND_DATADIR:-${MENABITCOIND_DEFAULT_DATADIR}}
+MENABITCOIND_USER=${MENABITCOIND_USER:-${BITCOIN_USER:-menabitcoin}}
+MENABITCOIND_GROUP=${MENABITCOIND_GROUP:-menabitcoin}
+MENABITCOIND_BIN=${MENABITCOIND_BIN:-/usr/bin/menabitcoind}
+MENABITCOIND_NICE=${MENABITCOIND_NICE:-${NICELEVEL:-0}}
+MENABITCOIND_OPTS="${MENABITCOIND_OPTS:-${BITCOIN_OPTS}}"
+
+name="Bitcoin Core Daemon"
+description="Bitcoin cryptocurrency P2P network daemon"
+
+command="/usr/bin/menabitcoind"
+command_args="-pid=\"${MENABITCOIND_PIDFILE}\" \
+		-conf=\"${MENABITCOIND_CONFIGFILE}\" \
+		-datadir=\"${MENABITCOIND_DATADIR}\" \
+		-daemon \
+		${MENABITCOIND_OPTS}"
+
+required_files="${MENABITCOIND_CONFIGFILE}"
+start_stop_daemon_args="-u ${MENABITCOIND_USER} \
+			-N ${MENABITCOIND_NICE} -w 2000"
+pidfile="${MENABITCOIND_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${MENABITCOIND_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${MENABITCOIND_USER}:${MENABITCOIND_GROUP}" \
+	"${MENABITCOIND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${MENABITCOIND_USER}:${MENABITCOIND_GROUP}" \
+	"${MENABITCOIND_PIDDIR}"
+
+	checkpath -f \
+	-o ${MENABITCOIND_USER}:${MENABITCOIND_GROUP} \
+	-m 0660 \
+	${MENABITCOIND_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${MENABITCOIND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run menabitcoind."
+		eerror "The setting must appear in ${MENABITCOIND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Bitcoin Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

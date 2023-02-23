@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#
+#  menabitcoind The MENA Bitcoin Core server.
+#
+#
+# chkconfig: 345 80 20
+# description: menabitcoind
+# processname: menabitcoind
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/menabitcoind, see below
+if [ -f /etc/sysconfig/menabitcoind ]; then
+        . /etc/sysconfig/menabitcoind
+fi
+
+RETVAL=0
+
+prog=menabitcoind
+# you can override the lockfile via MENABITCOIND_LOCKFILE in /etc/sysconfig/menabitcoind
+lockfile=${MENABITCOIND_LOCKFILE-/var/lock/subsys/menabitcoind}
+
+# menabitcoind defaults to /usr/bin/menabitcoind, override with MENABITCOIND_BIN
+menabitcoind=${MENABITCOIND_BIN-/usr/bin/menabitcoind}
+
+# menabitcoind opts default to -disablewallet, override with MENABITCOIND_OPTS
+menabitcoind_opts=${MENABITCOIND_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $MENABITCOINDOPTS $menabitcoind $menabitcoind_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog -t600
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

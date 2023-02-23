@@ -1,0 +1,33 @@
+# /etc/conf.d/menabitcoind: config file for /etc/init.d/menabitcoind
+
+# Config file location
+#MENABITCOIND_CONFIGFILE="/etc/menabitcoin/menabitcoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $MENABITCOIND_USER)
+#MENABITCOIND_PIDDIR="/var/run/menabitcoind"
+
+# What filename to give the pidfile
+#MENABITCOIND_PIDFILE="${MENABITCOIND_PIDDIR}/menabitcoind.pid"
+
+# Where to write menabitcoind data (be mindful that the blockchain is large)
+#MENABITCOIND_DATADIR="/var/lib/menabitcoind"
+
+# User and group to own menabitcoind process
+#MENABITCOIND_USER="menabitcoin"
+#MENABITCOIND_GROUP="menabitcoin"
+
+# Path to menabitcoind executable
+#MENABITCOIND_BIN="/usr/bin/menabitcoind"
+
+# Nice value to run menabitcoind under
+#MENABITCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#MENABITCOIND_OPTS=""
+
+# The timeout in seconds OpenRC will wait for menabitcoind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+MENABITCOIND_SIGTERM_TIMEOUT=600
