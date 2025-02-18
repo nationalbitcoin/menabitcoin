@@ -1,0 +1,10 @@
+Package: menabitcoin-clionly
+Version: VERSION
+Architecture: ARCH
+Maintainer: National Bitcoin project <admin@nationalbitcoin.org>
+Conflicts: menabitcoin-full
+Depends: libc6 (>= 2.29), libgcc1
+Installed-Size: 19963
+Homepage: http://menabitcoin.nationalbitcoin.org
+Description: This package provides M.E.N.A. Bitcoin Core console tools.
+ This package provides M.E.N.A. Bitcoin Core console tools: menabitcoin-cli, menabitcoin-tx, menabitcoin-wallet and menabitcoind.

@@ -1,0 +1,10 @@
+Package: menabitcoin-full
+Version: VERSION
+Architecture: ARCH
+Maintainer: National Bitcoin project <admin@nationalbitcoin.org>
+Conflicts: menabitcoin-clionly, menabitcoin-qtonly
+Depends: libc6 (>= 2.29), libgcc1, libexpat1, libxcb1, zlib1g, libXau6, libfreetype6, libfontconfig1, libpng16-16, libuuid1, libxdmcp6, libbsd0
+Installed-Size: 52409
+Homepage: http://menabitcoin.nationalbitcoin.org
+Description: This package provides M.E.N.A. Bitcoin Core console tools as well as menabitcoin-qt, a GUI version of full node software for mena Bitcoin peer-to-peer network.
+ This package provides M.E.N.A. Bitcoin Core console tools menabitcoin-cli, menabitcoin-tx, menabitcoin-wallet and menabitcoind. It also includes a tool menabitcoin-qt, a GUI version of full node software for M.E.N.A. Bitcoin peer-to-peer network.

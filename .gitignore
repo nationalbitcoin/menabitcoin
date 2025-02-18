@@ -2,6 +2,7 @@
 
 *.exe
 *.pdb
+*.deb
 src/menabitcoin
 src/menabitcoind
 src/menabitcoin-cli
